@@ -1,69 +1,167 @@
-# Brainwave_Matrix_Intern_Task2
-This project involves deploying a simple e-commerce website using Google Cloud Storage. It focuses on hosting static content, including HTML, CSS, and product images, in a public bucket for easy access. The project highlights secure, scalable cloud storage solutions for hosting static web content.
+# Noble Treasures - Cloud Deployment
 
-## Project Overview
+## Overview
+This repository provides the complete setup and deployment instructions for the **Noble Treasures** website. The project demonstrates how to upload images and static files to **Google Cloud Storage**, configure necessary permissions for public access, and update the website code to refer to these cloud-hosted assets. The website is focused on showcasing high-end products, including fragrances, bags, and watches.
 
-The website showcases basic product information, including an image, title, price, and a "Buy Now" button. The main goal of this project was to utilize **Google Cloud Storage** to host the static content and make it publicly accessible. This project highlights the use of Google Cloud’s powerful and cost-effective solutions for hosting static content.
-
-### Key Features:
-- **Google Cloud Storage** is used to host static files, making them publicly accessible.
-- The website uses a simple layout with **HTML** for structure and **CSS** for styling.
-- Product images are hosted and served directly from the cloud storage bucket.
-- Publicly accessible URL allows the content to be easily shared without the need for custom DNS or domain.
-
-### Project Structure:
-Brainwave_Matrix_Intern_Task2/ ├── images/ # Directory containing product images │ ├── product1.jpg # Image file for Product 1 │ ├── product2.jpg # Image file for Product 2 ├── index.html # Main HTML file containing the website structure └── style.css # CSS file for styling the website
-
-## Steps Involved in the Deployment:
-
-### 1. **Google Cloud Storage Bucket Creation**
-   - A **Google Cloud Storage** bucket named `your-ecommerce-bucket` was created to store all static files.
-   - The bucket is publicly accessible so users can view and download the files.
-
-### 2. **Uploading the Files**
-   - **index.html**: The core HTML file for the website's layout.
-   - **style.css**: The stylesheet that defines the website's design and layout.
-   - **Images**: Product images that will be displayed on the website.
-
-### 3. **Configuring Public Access**
-   - Google Cloud IAM roles were set to allow public access to the objects in the bucket.
-   - The necessary permissions were configured to allow **allUsers** to view the content.
-
-### 4. **Testing and Validation**
-   - Verified that the website was accessible via the public URL provided by **Google Cloud Storage**.
-   - Ensured all content, including HTML, CSS, and images, loaded correctly.
-
-### 5. **Conclusion**
-   - This project showcases how **Google Cloud Storage** can be utilized to host static websites easily and securely, with public access for web hosting.
-   - It demonstrates how cloud storage solutions can scale and provide easy access to static content, eliminating the need for complex server-based deployments.
-
-## How to Access the Website
-   The website is publicly hosted and can be accessed via the following URL format, where `your-ecommerce-bucket` is the name of the cloud bucket:
-   
-http://your-ecommerce-bucket.storage.googleapis.com/index.html
-
-### Instructions for Running Locally:
-If you'd like to preview the project locally, follow the steps below:
-
-Clone this repository: git clone https://github.com/ganeshchelluri7/Brainwave_Matrix_Intern_Task2.git
-
-Open index.html in a web browser: Double-click on index.html to view the e-commerce website.
-
-## Technologies Used:
-- **Google Cloud Storage**: Used for hosting static web content (HTML, CSS, images).
-- **HTML**: For the structure of the web page.
-- **CSS**: For styling and layout.
-- **GitHub**: To manage and version control the project.
-
-## Future Enhancements:
-- Integration of backend technologies for functionality like user authentication or a shopping cart.
-- Design enhancements to improve responsiveness for mobile and tablet views.
-- Ability to process user orders and integrate with a payment system for a fully functional e-commerce platform.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Table of Contents
+1. [Google Cloud Setup](#google-cloud-setup)
+   - [1.1 Create a Google Cloud Project](#11-create-a-google-cloud-project)
+   - [1.2 Enable Google Cloud Storage API](#12-enable-google-cloud-storage-api)
+   - [1.3 Create a Cloud Storage Bucket](#13-create-a-cloud-storage-bucket)
+   - [1.4 Upload Website Files](#14-upload-website-files)
+2. [Set Permissions for Public Access](#set-permissions-for-public-access)
+   - [2.1 Set Read Access on Images](#21-set-read-access-on-images)
+   - [2.2 Set Bucket Public Read Access](#22-set-bucket-public-read-access)
+3. [Modify HTML to Use Cloud-Hosted Images](#modify-html-to-use-cloud-hosted-images)
+4. [Test the Website](#test-the-website)
+5. [Troubleshooting](#troubleshooting)
+6. [Conclusion](#conclusion)
+7. [License](#license)
 
 ---
 
-### Acknowledgements:
-- Special thanks to **Google Cloud** for providing scalable cloud storage solutions
+## 1. Google Cloud Setup
+
+### 1.1 Create a Google Cloud Project
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Click on **"Select a project"** on the top bar.
+3. Click on **"New Project"** and provide the project details:
+    - Project Name: `Noble Treasures`
+    - Location: `No organization` (or your desired location)
+4. Click on **Create** to initialize the project.
+
+### 1.2 Enable Google Cloud Storage API
+1. In the Google Cloud Console, navigate to **API & Services > Dashboard**.
+2. In the top search bar, search for **Google Cloud Storage** and select the **Cloud Storage API**.
+3. Click **Enable** to activate Cloud Storage.
+
+### 1.3 Create a Cloud Storage Bucket
+Once your project is created and the Cloud Storage API is enabled:
+1. Open **Google Cloud Console**, go to **Storage**.
+2. Click **Create Bucket**.
+3. Set the following parameters for your bucket:
+    - **Name**: `nobletreasures` (or any custom name)
+    - **Location type**: `Multi-region`
+    - **Location**: Choose the location (e.g., `asia`)
+    - **Storage class**: `Standard`
+4. Click **Create** to create the bucket.
+
+### 1.4 Upload Website Files
+Your website includes:
+- HTML and CSS files.
+- Images for product showcases stored in an `/images/` directory.
+
+To upload files into the bucket:
+1. Install **Google Cloud SDK** or use the Cloud Console with **Google Cloud Shell**.
+2. Use **gsutil** to upload the website files:
+   - **For index.html**: 
+     ```bash
+     gsutil cp index.html gs://nobletreasures/
+     ```
+   - **For styles (e.g., style.css)**:
+     ```bash
+     gsutil cp style.css gs://nobletreasures/
+     ```
+   - **For images in the `images/` folder**:
+     ```bash
+     gsutil cp -r images/* gs://nobletreasures/images/
+     ```
+
+---
+
+## 2. Set Permissions for Public Access
+
+### 2.1 Set Read Access on Images
+To ensure that users can access images, configure the permissions for each image. 
+Run the following command for each image:
+
+```bash
+gsutil acl ch -u AllUsers:R gs://nobletreasures/images/DIOR\ OUD\ ISPAHAN.jpeg
+gsutil acl ch -u AllUsers:R gs://nobletreasures/images/DIOR\ POISON.jpeg
+gsutil acl ch -u AllUsers:R gs://nobletreasures/images/DIOR\ Saddle\ Shoulder\ Bag\ Black.jpg
+Alternatively, you can recursively give read access to all images in the /images/ directory:
+
+bash
+Copy code
+gsutil -m acl ch -r -u AllUsers:R gs://nobletreasures/images/
+2.2 Set Bucket Public Read Access
+Allow public access to all files in your bucket using the following IAM command:
+
+bash
+Copy code
+gsutil iam ch allUsers:objectViewer gs://nobletreasures
+This makes all objects in the bucket publicly viewable, including images and other files you upload.
+
+3. Modify HTML to Use Cloud-Hosted Images
+Once the images are uploaded and permissions are set, update your index.html and other HTML files to reference the cloud-hosted URLs for images.
+
+To use cloud-hosted URLs for images, follow this structure:
+
+plaintext
+Copy code
+https://storage.googleapis.com/<bucket_name>/<path_to_image>
+For example, your index.html should include images like this:
+
+html
+Copy code
+<img src="https://storage.googleapis.com/nobletreasures/images/DIOR%20OUD%20ISPAHAN.jpeg" alt="DIOR OUD ISPAHAN">
+<img src="https://storage.googleapis.com/nobletreasures/images/DIOR%20POISON.jpeg" alt="DIOR POISON">
+Make sure to replace spaces in filenames with %20 (URL encoding) as demonstrated above.
+
+4. Test the Website
+To test the website:
+
+Visit the index.html file hosted on the Google Cloud Storage bucket via the following URL:
+
+plaintext
+Copy code
+https://storage.googleapis.com/nobletreasures/index.html
+Verify that all images load correctly on the page. If not, check the following:
+
+Ensure the URLs are correctly specified.
+Verify that the objects have the correct public read permissions.
+5. Troubleshooting
+No Access to Images: If images aren't appearing, double-check that you set the read permissions correctly using:
+
+bash
+Copy code
+gsutil acl get gs://nobletreasures/images/DIOR\ OUD\ ISPAHAN.jpeg
+Invalid URL Encoding: Check that spaces in filenames are replaced with %20.
+
+Incorrect Permissions: To inspect bucket-level permissions, use:
+
+bash
+Copy code
+gsutil iam get gs://nobletreasures
+Ensure allUsers has objectViewer access.
+
+Unable to Upload: Ensure you're logged in with the correct permissions (Admin/Owner role) in Google Cloud and the bucket name is correct.
+
+6. Conclusion
+You have successfully deployed the Noble Treasures static website on Google Cloud Storage. Your website files, including images, are now publicly accessible. Use Google Cloud Storage to manage and host your content in a scalable and cost-effective manner.
+
+Next steps may include configuring your own domain and implementing Google Cloud CDN for faster delivery.
+
+7. License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+Feel free to fork this repository or contact me for any clarifications or adjustments.
+
+vbnet
+Copy code
+
+---
+
+### Key Points Included:
+1. **Step-by-Step Setup**: Details for creating a Google Cloud project, enabling storage APIs, creating the bucket, and uploading website files.
+2. **Permissions Management**: How to set public read access on the Cloud Storage files and buckets.
+3. **HTML Modification**: Guidance on updating your HTML files to use publicly accessible URLs for images.
+4. **Testing and Troubleshooting**: Ways to ensure the website loads properly and troubleshooting common issues.
+5. **Conclusion & License**: Final thoughts on hosting a static site on Google Cloud Storage with additional next steps for future enhancements.
+
+Let me know if anything else needs adjustment!
+
+
+
+
+
